@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101615" />
+  <meta name="description" content="UMBRAL: Fragmentos del cielo. Una aventura original de acción y exploración pixel art entre tres mundos rotos." />
+  <title>UMBRAL — Fragmentos del cielo</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23c8b58a' d='M12 2h8v5h5v18h-6V13h-6v12H7V7h5zm0 26h8v4h-8'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="UMBRAL, inicio">
+      <svg viewBox="0 0 32 36" width="27" height="30" aria-hidden="true"><path d="M11 1h10v5h5v24h-7V14h-6v16H6V6h5zM12 33h8v3h-8" fill="currentColor"/></svg>
+      <span>UMBRAL<span class="brand-sub">FRAGMENTOS DEL CIELO</span></span>
+    </a>
+    <nav aria-label="Información del juego"><button id="controls-top">Controles</button><button id="about-top">Acerca del juego <span aria-hidden="true">↗</span></button></nav>
+    <span class="edition"><i></i> EDICIÓN EXPLORADOR <span>01.00</span></span>
+  </header>
+  <main>
+    <div class="stage-heading"><span><i class="tiny-diamond"></i> EL MUNDO TE ESPERA</span><span>ACCIÓN · EXPLORACIÓN · 16 BITS</span></div>
+    <section id="game-frame" class="game-frame vignette" aria-label="Juego UMBRAL">
+      <canvas id="game" width="320" height="180" tabindex="0" aria-label="Mundo de UMBRAL. Usa WASD o flechas para moverte; espacio para saltar, Shift para dash, J para atacar, K para disparar, W para interactuar."></canvas>
+      <div class="scanlines-layer" aria-hidden="true"></div><div class="vignette-layer" aria-hidden="true"></div>
+      <div class="frame-corner tl"></div><div class="frame-corner tr"></div><div class="frame-corner bl"></div><div class="frame-corner br"></div>
+      <section id="title-panel" class="panel title-panel" aria-labelledby="game-title">
+        <span class="chapter-label">UN VIAJE AL OTRO LADO</span>
+        <h1 id="game-title"><span class="sr-only">UMBRAL</span><canvas id="wordmark" width="218" height="44" aria-hidden="true"></canvas></h1>
+        <p class="subtitle">FRAGMENTOS DEL CIELO</p>
+        <p class="title-description">El mundo se rompió.<br>Algo sigue brillando entre sus ruinas.</p>
+        <div class="title-actions"><button id="play" class="button primary"><span id="play-label">Comenzar viaje</span><span aria-hidden="true">↗</span></button><button id="new-game" class="quiet" hidden>Nuevo viaje</button></div>
+        <button id="title-controls" class="quiet controls-link"><span aria-hidden="true">⌨</span> Cómo jugar <span class="small-arrow">→</span></button>
+      </section>
+      <div id="title-detail" class="title-detail"><span class="detail-line"></span><span>01 — RUINAS DEL ECO</span><small>NO TODO LO PERDIDO ESTÁ OLVIDADO.</small></div>
+      <section id="pause-panel" class="panel modal-panel" hidden aria-labelledby="pause-title">
+        <span class="chapter-label">UN INSTANTE DE CALMA</span><h2 id="pause-title">EN PAUSA</h2><p>El mundo puede esperar.</p>
+        <div class="menu-stack"><button class="button primary" id="resume">Continuar <span>↗</span></button><button class="button secondary" id="pause-controls">Controles</button><button class="button secondary" id="pause-settings">Ajustes</button><button class="quiet" id="to-title">Volver al título</button></div>
+      </section>
+      <section id="dead-panel" class="panel modal-panel" hidden aria-labelledby="dead-title">
+        <span class="chapter-label">LA LUZ NO SE HA APAGADO</span><h2 id="dead-title">OTRO INTENTO.</h2><p>Tus descubrimientos permanecen.</p><button id="retry" class="button primary">Volver al santuario <span>↗</span></button>
+      </section>
+      <section id="ending-panel" class="panel modal-panel" hidden aria-labelledby="ending-title">
+        <span class="chapter-label">LOS FRAGMENTOS VUELVEN A LATIR</span><h2 id="ending-title">AÚN QUEDA CIELO.</h2><p>Has devuelto la luz al último umbral.<br>Y a todo lo que existe al otro lado.</p><div id="end-stats" class="end-stats"></div><button id="ending-credits" class="button primary">Ver créditos <span>↗</span></button><button id="ending-explore" class="quiet">Seguir explorando</button>
+      </section>
+      <div id="menu-shade" class="menu-shade" hidden></div>
+      <span id="game-announcer" class="sr-only" aria-live="polite"></span>
+    </section>
+    <div class="console-bar">
+      <div class="status"><span id="status-light"></span><span id="status-label">LISTO PARA EXPLORAR</span><span class="status-separator">/</span><span id="status-sub">GUARDADO AUTOMÁTICO</span></div>
+      <div class="console-tools"><button id="sound-toggle" aria-label="Silenciar sonido" aria-pressed="true" title="Sonido"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8q5 4 0 8M19 4q9 8 0 16"/></svg></button><span class="tool-separator"></span><button id="settings-toggle" aria-label="Ajustes visuales y audio" title="Ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg></button><button id="fullscreen" aria-label="Pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button></div>
+    </div>
+    <div class="controls-strip" aria-label="Controles rápidos"><span><kbd>←</kbd><kbd>→</kbd> Mover</span><span><kbd class="wide">ESPACIO</kbd> Saltar</span><span><kbd>SHIFT</kbd> Dash</span><span><kbd>J</kbd> Atacar</span><span><kbd>K</kbd> Proyectil</span><span><kbd>W</kbd> Interactuar</span><span><kbd>ESC</kbd> Pausa</span></div>
+    <p class="keyboard-note">Diseñado para jugar con teclado. Abre el juego en un ordenador para explorar.</p>
+  </main>
+  <footer><span>HECHO DE PÍXELES. LLENO DE SECRETOS.</span><span><i class="tiny-diamond"></i> TRES MUNDOS. UN ÚLTIMO UMBRAL.</span><button id="credits-link">Créditos <span>↗</span></button></footer>
+  <dialog id="info-dialog" aria-labelledby="dialog-title"><div class="dialog-header"><span class="chapter-label" id="dialog-eyebrow">BITÁCORA DEL EXPLORADOR</span><button id="close-dialog" aria-label="Cerrar">×</button></div><h2 id="dialog-title"></h2><div id="dialog-body"></div></dialog>
+  <noscript>UMBRAL necesita JavaScript para ejecutar el juego. Actívalo y vuelve a cargar esta página.</noscript>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

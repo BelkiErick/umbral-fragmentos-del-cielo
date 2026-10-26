@@ -1,0 +1,45 @@
+// Optional integration suite: install Playwright locally or set NODE_PATH to an existing installation.
+import {createRequire} from 'node:module';
+import {mkdir} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url);
+const {chromium}=require('playwright');
+const browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});
+const context=await browser.newContext({viewport:{width:1440,height:960},deviceScaleFactor:1});
+const page=await context.newPage();const errors=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+await mkdir('.artifacts',{recursive:true});
+try{
+  await page.goto('http://localhost:4173');await page.waitForSelector('#play');await page.waitForTimeout(250);
+  await page.screenshot({path:'.artifacts/title.png',fullPage:true});
+  await page.click('#play');await page.waitForTimeout(300);
+  const snapshot=()=>page.evaluate(async()=>{const {game:g}=await import('/src/main.js');return {x:g.player.x,y:g.player.y,tick:g.tick,room:g.room,hp:g.player.hp,ammo:g.player.ammo,mode:g.mode,vy:g.player.vy,dash:g.player.dashCooldown};});
+  const a=await snapshot();await page.keyboard.down('ArrowRight');await page.waitForTimeout(350);await page.keyboard.up('ArrowRight');
+  const b=await snapshot();assert.ok(b.x>a.x+25,'real keyboard moves player');
+  await page.keyboard.down('Space');await page.waitForTimeout(100);const jump=await snapshot();await page.keyboard.up('Space');
+  assert.ok(jump.y<b.y-15,'jump is immediate');
+  await page.keyboard.press('Shift');await page.waitForTimeout(80);assert.ok((await snapshot()).dash>0,'dash consumed energy');
+  await page.keyboard.press('k');await page.waitForTimeout(60);assert.equal((await snapshot()).ammo,5);
+  await page.keyboard.press('Escape');await page.waitForSelector('#pause-panel:not([hidden])');
+  const paused=await snapshot();await page.waitForTimeout(200);assert.equal((await snapshot()).tick,paused.tick,'pause stops simulation');
+  await page.click('#pause-settings');await page.check('#setting-scanlines');await page.uncheck('#setting-vignette');await page.click('#close-dialog');
+  assert.ok(await page.locator('#pause-panel').isVisible());
+  await page.click('#resume');await page.waitForTimeout(250);
+  await page.screenshot({path:'.artifacts/gameplay.png',fullPage:true});
+  await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+  assert.ok(await page.locator('#pause-panel').isVisible(),'blur pauses');
+  await page.reload();assert.equal(await page.locator('#play-label').textContent(),'Continuar viaje');
+  assert.ok(await page.locator('#game-frame').evaluate(e=>e.classList.contains('scanlines')),'settings persisted');
+  await page.click('#play');await page.waitForTimeout(100);
+  await page.click('#controls-top');assert.ok(await page.locator('#info-dialog').isVisible());await page.keyboard.press('Escape');
+  assert.ok(!(await page.locator('#pause-panel').isVisible()),'closing controls resumes prior play');
+  await page.setViewportSize({width:390,height:844});await page.keyboard.press('Escape');await page.screenshot({path:'.artifacts/mobile.png',fullPage:true});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile layout does not overflow');
+  const deniedContext=await browser.newContext();
+  await deniedContext.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('Storage disabled','SecurityError');};});
+  const deniedPage=await deniedContext.newPage();await deniedPage.goto('http://localhost:4173');await deniedPage.click('#play');await deniedPage.waitForTimeout(250);
+  assert.match(await deniedPage.locator('#status-sub').textContent(),/SIN GUARDADO/,'storage failure remains visible after ordinary status refresh');
+  await deniedContext.close();
+  assert.deepEqual(errors,[],'no console or page errors');
+  console.log('PASS: keyboard movement, jump, dash, projectile, pause, blur, settings, autosave, dialog focus, mobile layout; no browser errors.');
+}finally{await browser.close();}

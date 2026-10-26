@@ -1,0 +1,13 @@
+{
+  "name": "umbral-fragmentos-del-cielo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Una aventura de pixel art entre mundos rotos",
+  "scripts": {
+    "start": "node scripts/server.mjs",
+    "dev": "node scripts/server.mjs",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": { "node": ">=20" }
+}
